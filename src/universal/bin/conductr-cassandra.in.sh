@@ -81,22 +81,24 @@ JAVA_OPTS="$JAVA_OPTS:-Djava.library.path=$CASSANDRA_HOME/lib/sigar-bin"
 
 # Update the YAML config with info made available via ConductR
 
-sed -i '' 's/\(cluster_name:\) 'Test Cluster'/\1 '"$BUNDLE_SYSTEM"'/' "$CASSANDRA_CONF/cassandra.yaml"
+sed -ri 's/^(cluster_name:) '"'Test Cluster'"'/\1 '"'$BUNDLE_SYSTEM'"'/' "$CASSANDRA_CONF/cassandra.yaml"
 
-sed -i '' 's/\(listen_address:\) localhost/\1 "'"$CAS_STORAGE_IP"'"/' "$CASSANDRA_CONF/cassandra.yaml"
-sed -i '' 's/\(rpc_address:\) localhost/\1 "'"$CAS_RPC_IP"'"/' "$CASSANDRA_CONF/cassandra.yaml"
+sed -ri 's/^(listen_address:) localhost/\1 '$CAS_STORAGE_BIND_IP'/' "$CASSANDRA_CONF/cassandra.yaml"
+sed -ri 's/^(rpc_address:) localhost/\1 '$CAS_RPC_BIND_IP'/' "$CASSANDRA_CONF/cassandra.yaml"
 
-sed -i '' 's/\(native_transport_port:\) 9042/\1 "'"$CAS_NATIVE_PORT"'"/' "$CASSANDRA_CONF/cassandra.yaml"
-sed -i '' 's/\(rpc_port:\) 9160/\1 "'"$CAS_RPC_PORT"'"/' "$CASSANDRA_CONF/cassandra.yaml"
-sed -i '' 's/\(storage_port:\) 7000/\1 "'"$CAS_STORAGE_PORT"'"/' "$CASSANDRA_CONF/cassandra.yaml"
+sed -ri 's/^(native_transport_port:) 9042/\1 '$CAS_NATIVE_BIND_PORT'/' "$CASSANDRA_CONF/cassandra.yaml"
+sed -ri 's/^(rpc_port:) 9160/\1 '$CAS_RPC_BIND_PORT'/' "$CASSANDRA_CONF/cassandra.yaml"
+sed -ri 's/^(storage_port:) 7000/\1 '$CAS_STORAGE_BIND_PORT'/' "$CASSANDRA_CONF/cassandra.yaml"
 
 ARR_CAS_STORAGE_OTHER_IPS=(${CAS_STORAGE_OTHER_IPS//:/ })
-if [ -n $ARR_CAS_STORAGE_OTHER_IPS ]; then
-  CASSANDRA_SEEDS=""
-  for i in ${!ARR_CAS_STORAGE_OTHER_IPS[*]}
-  do
-    CASSANDRA_SEEDS=$CASSANDRA_SEEDS,${ARR_CAS_STORAGE_OTHER_IPS[$i]}
-  done
-  CASSANDRA_SEEDS=${CASSANDRA_SEEDS:1}
-  sed -i '' 's/\(- seeds:\) "127.0.0.1"/\1 "'"$CASSANDRA_SEEDS"'"/' "$CASSANDRA_CONF/cassandra.yaml"
+CASSANDRA_SEEDS=""
+for i in ${!ARR_CAS_STORAGE_OTHER_IPS[*]}
+do
+  CASSANDRA_SEEDS=$CASSANDRA_SEEDS,${ARR_CAS_STORAGE_OTHER_IPS[$i]}
+done
+CASSANDRA_SEEDS=${CASSANDRA_SEEDS:1}
+if [ -z "$CASSANDRA_SEEDS" ];
+then
+  CASSANDRA_SEEDS=$CAS_STORAGE_BIND_IP
 fi
+sed -ri 's/(- seeds:) "127.0.0.1"/\1 "'$CASSANDRA_SEEDS'"/' "$CASSANDRA_CONF/cassandra.yaml"

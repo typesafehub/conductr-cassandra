@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 CURRENT_PATH=`dirname "$0"`
 export CASSANDRA_INCLUDE="$CURRENT_PATH/conductr-cassandra.in.sh" 
-source $CURRENT_PATH/cassandra -f
+/bin/bash $CURRENT_PATH/cassandra -f

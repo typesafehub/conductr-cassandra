@@ -6,6 +6,8 @@ version := "3.0.2"
 
 libraryDependencies += "org.apache.cassandra" % "cassandra-all" % "3.0.2"
 
+// Bundle configuration
+
 BundleKeys.nrOfCpus := 2.0
 BundleKeys.memory := 1.GiB
 BundleKeys.diskSpace := 100.MB
@@ -17,11 +19,20 @@ BundleKeys.endpoints := Map(
   "cas_storage" -> Endpoint("tcp", 7000)
 )
 
-BundleKeys.executableScriptPath in Bundle := (file((normalizedName in Bundle).value) / "bin" / "bootstrap.sh").getPath
+BundleKeys.executableScriptPath in Bundle := (file((normalizedName in Bundle).value) / "bin" / "bootstrap").getPath
 BundleKeys.checks := Seq(
   uri("$CAS_STORAGE_HOST?retry-count=10&retry-delay=3")
 )
 
 javaOptions in Bundle := Seq.empty
+
+// Bundle publishing configuration
+
+inConfig(Bundle)(Seq(
+  bintrayVcsUrl := Some("https://github.com/typesafehub/conductr-cassandra"),
+  bintrayOrganization := Some("typesafe")
+))
+
+//
 
 lazy val root = project.in(file(".")).enablePlugins(JavaServerAppPackaging)
