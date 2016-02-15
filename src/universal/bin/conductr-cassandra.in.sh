@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -81,7 +82,7 @@ JAVA_OPTS="$JAVA_OPTS:-Djava.library.path=$CASSANDRA_HOME/lib/sigar-bin"
 
 # Update the YAML config with info made available via ConductR
 
-sed -ri 's/^(cluster_name:) '"'Test Cluster'"'/\1 '"'$BUNDLE_SYSTEM'"'/' "$CASSANDRA_CONF/cassandra.yaml"
+sed -ri 's/^(cluster_name:) '"'Test Cluster'"'/\1 '"'$BUNDLE_SYSTEM-v$BUNDLE_SYSTEM_VERSION'"'/' "$CASSANDRA_CONF/cassandra.yaml"
 
 sed -ri 's/^(listen_address:) localhost/\1 '$CAS_STORAGE_BIND_IP'/' "$CASSANDRA_CONF/cassandra.yaml"
 sed -ri 's/^(rpc_address:) localhost/\1 '$CAS_RPC_BIND_IP'/' "$CASSANDRA_CONF/cassandra.yaml"
@@ -103,7 +104,8 @@ then
 fi
 sed -ri 's/(- seeds:) "127.0.0.1"/\1 "'$CASSANDRA_SEEDS'"/' "$CASSANDRA_CONF/cassandra.yaml"
 
-sed -ri 's/^#(.*hints_directory: '"/var/lib/cassandra/hints"')/\1/' "$CASSANDRA_CONF/cassandra.yaml"
-sed -ri 's/^#(.*- '"/var/lib/cassandra/data"')/\1/' "$CASSANDRA_CONF/cassandra.yaml"
-sed -ri 's/^#(.*commitlog_directory: '"/var/lib/cassandra/commitlog"')/\1/' "$CASSANDRA_CONF/cassandra.yaml"
-sed -ri 's/^#(.*csaved_caches_directory: '"/var/lib/cassandra/saved_caches"')/\1/' "$CASSANDRA_CONF/cassandra.yaml"
+sed -ri 's/^# (hints_directory:) \/var\/lib\/cassandra\/hints/\1 \/var\/lib\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/hints/' "$CASSANDRA_CONF/cassandra.yaml"
+sed -ri 's/^# (data_file_directories:)/\1/' "$CASSANDRA_CONF/cassandra.yaml"
+sed -ri 's/^# (    -) \/var\/lib\/cassandra\/data/\1 \/var\/lib\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/data/' "$CASSANDRA_CONF/cassandra.yaml"
+sed -ri 's/^# (commitlog_directory:) \/var\/lib\/cassandra\/commitlog/\1 \/var\/lib\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/commitlog/' "$CASSANDRA_CONF/cassandra.yaml"
+sed -ri 's/^# (saved_caches_directory:) \/var\/lib\/cassandra\/saved_caches/\1 \/var\/lib\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/saved_caches/' "$CASSANDRA_CONF/cassandra.yaml"

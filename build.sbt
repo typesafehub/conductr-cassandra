@@ -4,6 +4,8 @@ organization := "com.typesafe.conductr"
 name := "cassandra"
 version := "3.0.2"
 
+licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
+
 libraryDependencies += "org.apache.cassandra" % "cassandra-all" % "3.0.2"
 
 // Bundle configuration
@@ -14,8 +16,8 @@ BundleKeys.diskSpace := 100.MB
 BundleKeys.roles := Set("cassandra")
 
 BundleKeys.endpoints := Map(
-  "cas_native" ->  Endpoint("tcp", services = Set(uri("tcp://:9042"))),
-  "cas_rpc" ->     Endpoint("tcp", services = Set(uri("tcp://:9160"))),
+  "cas_native" ->  Endpoint("tcp", services = Set(uri("tcp://:9042/native"))),
+  "cas_rpc" ->     Endpoint("tcp", services = Set(uri("tcp://:9160/rpc"))),
   "cas_storage" -> Endpoint("tcp", 7000)
 )
 
