@@ -102,3 +102,8 @@ then
   CASSANDRA_SEEDS=$CAS_STORAGE_BIND_IP
 fi
 sed -ri 's/(- seeds:) "127.0.0.1"/\1 "'$CASSANDRA_SEEDS'"/' "$CASSANDRA_CONF/cassandra.yaml"
+
+sed -ri 's/^#(.*hints_directory: '"/var/lib/cassandra/hints"')/\1/' "$CASSANDRA_CONF/cassandra.yaml"
+sed -ri 's/^#(.*- '"/var/lib/cassandra/data"')/\1/' "$CASSANDRA_CONF/cassandra.yaml"
+sed -ri 's/^#(.*commitlog_directory: '"/var/lib/cassandra/commitlog"')/\1/' "$CASSANDRA_CONF/cassandra.yaml"
+sed -ri 's/^#(.*csaved_caches_directory: '"/var/lib/cassandra/saved_caches"')/\1/' "$CASSANDRA_CONF/cassandra.yaml"
