@@ -10,7 +10,7 @@ libraryDependencies += "org.apache.cassandra" % "cassandra-all" % "3.0.2"
 
 // Bundle configuration
 
-BundleKeys.nrOfCpus := 2.0
+BundleKeys.nrOfCpus := 1.1
 BundleKeys.memory := 1.GiB
 BundleKeys.diskSpace := 100.MB
 BundleKeys.roles := Set("cassandra")
