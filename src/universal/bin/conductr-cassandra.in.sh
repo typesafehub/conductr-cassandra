@@ -28,7 +28,7 @@ if [ "x$CASSANDRA_CONF" = "x" ]; then
     CASSANDRA_CONF="$CASSANDRA_HOME/conf"
 fi
 
-# This can be the path to a jar file, or a directory containing the 
+# This can be the path to a jar file, or a directory containing the
 # compiled classes. NOTE: This isn't needed by the startup script,
 # it's just used here in constructing the classpath.
 cassandra_bin="$CASSANDRA_HOME/build/classes/main"
@@ -82,14 +82,16 @@ JAVA_OPTS="$JAVA_OPTS:-Djava.library.path=$CASSANDRA_HOME/lib/sigar-bin"
 
 # Update the YAML config with info made available via ConductR
 
-sed -ri 's/^(cluster_name:) '"'Test Cluster'"'/\1 '"'$BUNDLE_SYSTEM-v$BUNDLE_SYSTEM_VERSION'"'/' "$CASSANDRA_CONF/cassandra.yaml"
+perl -i -pe 's/^(cluster_name:) '"'Test Cluster'"'/\1 '"'$BUNDLE_SYSTEM-v$BUNDLE_SYSTEM_VERSION'"'/' "$CASSANDRA_CONF/cassandra.yaml"
 
-sed -ri 's/^(listen_address:) localhost/\1 '$CAS_STORAGE_BIND_IP'/' "$CASSANDRA_CONF/cassandra.yaml"
-sed -ri 's/^(rpc_address:) localhost/\1 '$CAS_RPC_BIND_IP'/' "$CASSANDRA_CONF/cassandra.yaml"
+perl -i -pe 's/^(cluster_name:) '"'Test Cluster'"'/\1 '"'$BUNDLE_SYSTEM-v$BUNDLE_SYSTEM_VERSION'"'/' "$CASSANDRA_CONF/cassandra.yaml"
 
-sed -ri 's/^(native_transport_port:) 9042/\1 '$CAS_NATIVE_BIND_PORT'/' "$CASSANDRA_CONF/cassandra.yaml"
-sed -ri 's/^(rpc_port:) 9160/\1 '$CAS_RPC_BIND_PORT'/' "$CASSANDRA_CONF/cassandra.yaml"
-sed -ri 's/^(storage_port:) 7000/\1 '$CAS_STORAGE_BIND_PORT'/' "$CASSANDRA_CONF/cassandra.yaml"
+perl -i -pe 's/^(listen_address:) localhost/\1 '$CAS_STORAGE_BIND_IP'/' "$CASSANDRA_CONF/cassandra.yaml"
+perl -i -pe 's/^(rpc_address:) localhost/\1 '$CAS_RPC_BIND_IP'/' "$CASSANDRA_CONF/cassandra.yaml"
+
+perl -i -pe 's/^(native_transport_port:) 9042/\1 '$CAS_NATIVE_BIND_PORT'/' "$CASSANDRA_CONF/cassandra.yaml"
+perl -i -pe 's/^(rpc_port:) 9160/\1 '$CAS_RPC_BIND_PORT'/' "$CASSANDRA_CONF/cassandra.yaml"
+perl -i -pe 's/^(storage_port:) 7000/\1 '$CAS_STORAGE_BIND_PORT'/' "$CASSANDRA_CONF/cassandra.yaml"
 
 ARR_CAS_STORAGE_OTHER_IPS=(${CAS_STORAGE_OTHER_IPS//:/ })
 CASSANDRA_SEEDS=""
@@ -102,10 +104,10 @@ if [ -z "$CASSANDRA_SEEDS" ];
 then
   CASSANDRA_SEEDS=$CAS_STORAGE_BIND_IP
 fi
-sed -ri 's/(- seeds:) "127.0.0.1"/\1 "'$CASSANDRA_SEEDS'"/' "$CASSANDRA_CONF/cassandra.yaml"
+perl -i -pe 's/(- seeds:) "127.0.0.1"/\1 "'$CASSANDRA_SEEDS'"/' "$CASSANDRA_CONF/cassandra.yaml"
 
-sed -ri 's/^# (hints_directory:) \/var\/lib\/cassandra\/hints/\1 \/var\/lib\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/hints/' "$CASSANDRA_CONF/cassandra.yaml"
-sed -ri 's/^# (data_file_directories:)/\1/' "$CASSANDRA_CONF/cassandra.yaml"
-sed -ri 's/^# (    -) \/var\/lib\/cassandra\/data/\1 \/var\/lib\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/data/' "$CASSANDRA_CONF/cassandra.yaml"
-sed -ri 's/^# (commitlog_directory:) \/var\/lib\/cassandra\/commitlog/\1 \/var\/lib\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/commitlog/' "$CASSANDRA_CONF/cassandra.yaml"
-sed -ri 's/^# (saved_caches_directory:) \/var\/lib\/cassandra\/saved_caches/\1 \/var\/lib\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/saved_caches/' "$CASSANDRA_CONF/cassandra.yaml"
+perl -i -pe 's/^# (hints_directory:) \/var\/lib\/cassandra\/hints/\1 \/var\/lib\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/hints/' "$CASSANDRA_CONF/cassandra.yaml"
+perl -i -pe 's/^# (data_file_directories:)/\1/' "$CASSANDRA_CONF/cassandra.yaml"
+perl -i -pe 's/^# (    -) \/var\/lib\/cassandra\/data/\1 \/var\/lib\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/data/' "$CASSANDRA_CONF/cassandra.yaml"
+perl -i -pe 's/^# (commitlog_directory:) \/var\/lib\/cassandra\/commitlog/\1 \/var\/lib\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/commitlog/' "$CASSANDRA_CONF/cassandra.yaml"
+perl -i -pe 's/^# (saved_caches_directory:) \/var\/lib\/cassandra\/saved_caches/\1 \/var\/lib\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/saved_caches/' "$CASSANDRA_CONF/cassandra.yaml"
