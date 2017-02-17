@@ -98,8 +98,13 @@ then
 fi
 perl -i -pe 's/(- seeds:) "127.0.0.1"/\1 "'$CASSANDRA_SEEDS'"/' "$CASSANDRA_CONF/cassandra.yaml"
 
-perl -i -pe 's/^# (hints_directory:) \/var\/lib\/cassandra\/hints/\1 \/var\/lib\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/hints/' "$CASSANDRA_CONF/cassandra.yaml"
+VAR_LIB_DIR='\/var\/lib'
+UNAMESTR=`uname`
+if [ "$UNAMESTR" == "Darwin" ]; then
+   VAR_LIB_DIR="\/usr\/local\/var\/lib"
+fi
+perl -i -pe 's/^# (hints_directory:) \/var\/lib\/cassandra\/hints/\1 '$VAR_LIB_DIR'\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/hints/' "$CASSANDRA_CONF/cassandra.yaml"
 perl -i -pe 's/^# (data_file_directories:)/\1/' "$CASSANDRA_CONF/cassandra.yaml"
-perl -i -pe 's/^# (    -) \/var\/lib\/cassandra\/data/\1 \/var\/lib\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/data/' "$CASSANDRA_CONF/cassandra.yaml"
-perl -i -pe 's/^# (commitlog_directory:) \/var\/lib\/cassandra\/commitlog/\1 \/var\/lib\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/commitlog/' "$CASSANDRA_CONF/cassandra.yaml"
-perl -i -pe 's/^# (saved_caches_directory:) \/var\/lib\/cassandra\/saved_caches/\1 \/var\/lib\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/saved_caches/' "$CASSANDRA_CONF/cassandra.yaml"
+perl -i -pe 's/^# (    -) \/var\/lib\/cassandra\/data/\1 '$VAR_LIB_DIR'\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/data/' "$CASSANDRA_CONF/cassandra.yaml"
+perl -i -pe 's/^# (commitlog_directory:) \/var\/lib\/cassandra\/commitlog/\1 '$VAR_LIB_DIR'\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/commitlog/' "$CASSANDRA_CONF/cassandra.yaml"
+perl -i -pe 's/^# (saved_caches_directory:) \/var\/lib\/cassandra\/saved_caches/\1 '$VAR_LIB_DIR'\/'$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION'\/saved_caches/' "$CASSANDRA_CONF/cassandra.yaml"
