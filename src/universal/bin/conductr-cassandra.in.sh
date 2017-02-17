@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -14,10 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-# NOTE - this file was originally taken from cassandra.in.sh and
-# then modified for ConductR so that other environmental things can
-# be taken care of.
 
 if [ "x$CASSANDRA_HOME" = "x" ]; then
     CASSANDRA_HOME="`dirname "$0"`/.."
@@ -81,9 +76,6 @@ fi
 JAVA_OPTS="$JAVA_OPTS:-Djava.library.path=$CASSANDRA_HOME/lib/sigar-bin"
 
 # Update the YAML config with info made available via ConductR
-
-perl -i -pe 's/^(cluster_name:) '"'Test Cluster'"'/\1 '"'$BUNDLE_SYSTEM-v$BUNDLE_SYSTEM_VERSION'"'/' "$CASSANDRA_CONF/cassandra.yaml"
-
 perl -i -pe 's/^(cluster_name:) '"'Test Cluster'"'/\1 '"'$BUNDLE_SYSTEM-v$BUNDLE_SYSTEM_VERSION'"'/' "$CASSANDRA_CONF/cassandra.yaml"
 
 perl -i -pe 's/^(listen_address:) localhost/\1 '$CAS_STORAGE_BIND_IP'/' "$CASSANDRA_CONF/cassandra.yaml"

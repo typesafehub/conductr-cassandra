@@ -35,6 +35,4 @@ inConfig(Bundle)(Seq(
   bintrayOrganization := Some("typesafe")
 ))
 
-//
-
 lazy val root = project.in(file(".")).enablePlugins(JavaServerAppPackaging)
