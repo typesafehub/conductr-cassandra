@@ -17,7 +17,12 @@ The bundle will form a cluster with the name associated with the bundle's `syste
 
 ### Cassandra nodes
 
-The bundle will assume that the Cassandra directories reside outside of the bundle itself, under `/var/lib`. Cassandra's convention is to use `cassandra` as the sub directory e.g. `/var/lib/cassandra`. This bundle will substitute the `$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION` environment vars in place of `cassandra` e.g. `/var/lib/cassandra-v3` (the compatibility version has been set to 3 by default in order to signify Cassandra v.3).
+The bundle will assume that the Cassandra directories reside outside of the bundle itself, depending on the OS:
+
+- Linux: `/var/lib`
+- macOS: `/usr/local/var/lib`
+
+Cassandra's convention is to use `cassandra` as the sub directory e.g. `/var/lib/cassandra`. This bundle will substitute the `$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION` environment vars in place of `cassandra` e.g. `/var/lib/cassandra-v3` (the compatibility version has been set to 3 by default in order to signify Cassandra v.3).
 
 You must ensure that the nodes where Cassandra bundles will run have these directories established and owned by the conductr user e.g.:
 
@@ -26,7 +31,9 @@ sudo mkdir /var/lib/cassandra-v3
 sudo chown conductr /var/lib/cassandra-v3
 ```
 
-The `cassandra` role is assigned to this bundle by default so make sure that the ConductR service on that node has that role (it always will for the sandbox).
+Note when using the sandbox, the directories are created automatically.
+
+The `cassandra` role is assigned to this bundle by default so make sure that the ConductR service on that node has that role. Note that on the sandbox, roles are disabled by default so you don't need to worry about it.
 
 ## Configuring for your application/service
 
