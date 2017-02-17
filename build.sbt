@@ -2,11 +2,11 @@ import ByteConversions._
 
 organization := "com.typesafe.conductr"
 name := "cassandra"
-version := "3.0.2"
+version := "3.10"
 
 licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
 
-libraryDependencies += "org.apache.cassandra" % "cassandra-all" % "3.0.2"
+libraryDependencies += "org.apache.cassandra" % "cassandra-all" % "3.10"
 
 // Bundle configuration
 
