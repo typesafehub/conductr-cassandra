@@ -14,14 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# The directory where Cassandra's configs live (required)
-if [ "x$CASSANDRA_CONF" = "x" ]; then
-    BUNDLE_DIR="$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )"
-    CASSANDRA_CONF="$BUNDLE_DIR/conf"
-fi
-
 if [ "x$CASSANDRA_HOME" = "x" ]; then
     CASSANDRA_HOME="`dirname "$0"`/.."
+fi
+
+# The directory where Cassandra's configs live (required)
+if [ "x$CASSANDRA_CONF" = "x" ]; then
+    CASSANDRA_CONF="$CASSANDRA_HOME/conf"
 fi
 
 # This can be the path to a jar file, or a directory containing the
