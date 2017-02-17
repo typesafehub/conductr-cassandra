@@ -153,7 +153,7 @@ case "`uname -s`" in
             which ldconfig > /dev/null 2>&1
             if [ $? = 0 ] ; then
                 # e.g. for CentOS
-                dirs="/lib64 /lib /usr/lib64 /usr/lib `ldconfig -v 2>/dev/null | grep -v ^$'\t' | sed 's/^\([^:]*\):.*$/\1/'`"
+                dirs="/lib64 /lib /usr/lib64 /usr/lib `ldconfig -v 2>/dev/null | grep -v '^\s' | sed 's/^\([^:]*\):.*$/\1/'`"
             else
                 # e.g. for Debian, OpenSUSE
                 dirs="/lib64 /lib /usr/lib64 /usr/lib `cat /etc/ld.so.conf /etc/ld.so.conf.d/*.conf | grep '^/'`"
@@ -211,7 +211,7 @@ launch_service()
 }
 
 # Parse any command line options.
-args=`getopt vfhp:bD:H:E: "$@"`
+args=`getopt vRfhp:bD:H:E: "$@"`
 eval set -- "$args"
 
 classname="org.apache.cassandra.service.CassandraDaemon"
@@ -231,8 +231,12 @@ while true; do
             exit 0
         ;;
         -v)
-            "$JAVA" -cp "$CLASSPATH" org.apache.cassandra.tools.GetVersion
+            "$JAVA" -cp "$CLASSPATH" "-Dlogback.configurationFile=logback-tools.xml" org.apache.cassandra.tools.GetVersion
             exit 0
+        ;;
+        -R)
+            allow_root="yes"
+            shift
         ;;
         -D)
             properties="$properties -D$2"
@@ -248,20 +252,25 @@ while true; do
         ;;
         --)
             shift
+            if [ "x$*" != "x" ] ; then
+                echo "Error parsing arguments! Unknown argument \"$*\"" >&2
+                exit 1
+            fi
             break
         ;;
         *)
-            echo "Error parsing arguments!" >&2
+            echo "Error parsing arguments! Unknown argument \"$1\"" >&2
             exit 1
         ;;
     esac
 done
 
-# see CASSANDRA-7254
-"$JAVA" -cp "$CLASSPATH" $JVM_OPTS 2>&1 | grep -q 'Error: Exception thrown by the agent : java.lang.NullPointerException'
-if [ $? -ne "1" ]; then 
-    echo Unable to bind JMX, is Cassandra already running?
-    exit 1;
+if [ "x$allow_root" != "xyes" ] ; then
+    if [ "`id -u`" = "0" ] || [ "`id -g`" = "0" ] ; then
+        echo "Running Cassandra as root user or group is not recommended - please start Cassandra using a different system user."
+        echo "If you really want to force running Cassandra as root, use -R command line option."
+        exit 1
+    fi
 fi
 
 # Start up the service
