@@ -16,8 +16,8 @@ BundleKeys.diskSpace := 100.MB
 BundleKeys.roles := Set("cassandra")
 
 BundleKeys.endpoints := Map(
-  "cas_native" ->  Endpoint("tcp", services = Set(uri("tcp://:9042/native"))),
-  "cas_rpc" ->     Endpoint("tcp", services = Set(uri("tcp://:9160/rpc"))),
+  "cas_native" ->  Endpoint("tcp", services = Set(uri("tcp://:9042/cas_native"))),
+  "cas_rpc" ->     Endpoint("tcp"),
   "cas_storage" -> Endpoint("tcp", 7000)
 )
 
