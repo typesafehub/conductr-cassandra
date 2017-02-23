@@ -26,6 +26,8 @@ BundleKeys.checks := Seq(
   uri("$CAS_STORAGE_HOST?retry-count=10&retry-delay=3")
 )
 
+BundleKeys.configurationName := "cassandra-prod"
+
 javaOptions in Bundle := Seq.empty
 
 // Bundle publishing configuration

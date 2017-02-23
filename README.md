@@ -11,46 +11,49 @@ conduct load cassandra
 conduct run cassandra --scale 3
 ```
 
-The bundle will form a cluster with the name associated with the bundle's `system` property (which is the project name by default). The default system name is `cassandra`. It is expected that you provide an overriding bundle configuration that re-defines the system name. In addition, because Cassandra expects its storage port to be the same across the cluster, the expectation is that you override this port. By default the storage port is set to 7000. Expressing application/service specific configurations is discussed next.
+The bundle will form a cluster with the name associated with the bundle's `system` and `compatibility-version` property.
 
 > Disclaimer: Cassandra is a very sophisticated database. Although ConductR makes it easy to launch and scale Cassandra, you should still [learn about Cassandra](http://www.tutorialspoint.com/cassandra/).
 
 ### Working directories
 
-The bundle will assume that the Cassandra working directories reside outside of the bundle itself. The location of the Cassandra working directories are depending on:
+By default, the Cassandra working directories reside inside of the bundle execution directory. Therefore, you don't need to manually cleanup certain directories. Each new Cassandra instance will start with an empty working directory.
 
-- Operation system
-- Bundle name and Bundle compatibility version
-- Cassandra node address
-
-On Linux, the base directory is `/var/lib`. On macOS, the base directory is `/usr/local/var/lib`.
-
-Cassandra's convention is to use `cassandra` as the sub directory e.g. `/var/lib/cassandra`. This bundle will substitute the `$BUNDLE_NAME-v$BUNDLE_COMPATIBILITY_VERSION` environment vars in place of `cassandra` e.g. `/var/lib/cassandra-v3` (the compatibility version has been set to 3 by default in order to signify Cassandra v.3).
-
-You must ensure that the nodes where Cassandra bundles will run have these directories established and owned by the conductr user e.g.:
-
-```
-sudo mkdir /var/lib/cassandra-v3
-sudo chown conductr /var/lib/cassandra-v3
-```
-
-Note when using the sandbox, the directories are created automatically.
-
-To support several Cassandra instances on a single host, each bundle instance will create a sub directory based on the node address, e.g.
- 
-```
-/var/lib/cassandra/v3/192.168.10.1
-/var/lib/cassandra/v3/192.168.10.2
-/var/lib/cassandra/v3/192.168.10.3
-```
+The default bundle configuration is suited for development and integration testing purposes. For production, please use the provided `cassandra-prod` configuration as described in [Production configuration](#production-configuration) or use a custom configuration as described in [Custom configuration](#custom-configuration).
 
 ### Roles
 
-The `cassandra` role is assigned to this bundle by default so make sure that the ConductR service on that node has that role. Note that on the sandbox, roles are disabled by default so you don't need to worry about it.
+The `cassandra` role is assigned to this bundle by default so make sure that the ConductR service on that node has that role. Note that on the ConductR sandbox, roles are disabled by default so you don't need to worry about it.
 
-## Configuring for your application/service
+## Production configuration
 
-There is a `sample-config` folder containing another folder named "cassandra-myservice". This folder represents the entire configuration for a fictitious service named `cassandra-myservice`. To use it with ConductR you first "shazar" it (you'll need the [ConductR CLI](https://github.com/typesafehub/conductr-cli#command-line-interface-cli-for-typesafe-conductr)), and then load it along with the Cassandra bundle. 
+When running Cassandra in production we recommend to use our production configuration:
+
+```
+conduct load cassandra cassandra-prod
+```
+
+This will load the cassandra bundle together with a [provided bundle configuration](https://github.com/typesafehub/conductr-cassandra/tree/master/src/universal/bundle-configuration/cassandra-prod) that is suited for production purposes.
+
+This bundle configuration changes the Cassandra working base directory to `/var/lib/cassandra`.
+
+Please ensure that the directory is created and owned by the conductr user:
+
+```
+sudo mkdir /var/lib/cassandra
+sudo chown conductr /var/lib/cassandra
+```
+
+## Custom configuration
+
+It is also possible to provide a custom bundle configuration to the cassandra bundle. This way you can provide a custom Cassandra configuration and therefore override the following files:
+- bin/conductr-cassandra.in.sh
+- conf/cassandra.yaml
+- conf/cassandra-env.sh
+- conf/jvm.options
+- conf/logback.xml
+
+This project comes with a custom sample bundle configuration which is located in the [sample-config](https://github.com/typesafehub/conductr-cassandra/tree/master/sample-config) directory. This folder contains a fictious `cassandra-myservice` bundle configuration. To use it with ConductR you first "shazar" it (you'll need the [ConductR CLI](https://github.com/typesafehub/conductr-cli#command-line-interface-cli-for-typesafe-conductr)), and then load it along with the Cassandra bundle. 
 
 To shazar from this project's directory:
 
@@ -68,7 +71,7 @@ conduct load cassandra ./cassandra-myservice-d2a3b64e75a916118ed26ed880f7263162c
 
 This will return a bundle id to you, something like: "3f8b3f7-d2a3b64". This id uniquely represents the combination of the Cassandra bundle and the configuration that you provided.
 
-After you have ensured that Cassandra has its directories created (`/var/lib/cassandra-myservice-v3`) along with them being owned by the `conductr` user (again, you won't need to for the sandbox), you can then:
+After you have ensured that Cassandra has its directories created (`/var/lib/cassandra`) along with them being owned by the `conductr` user, you can then:
 
 ```
 conduct run cassandra-myservice --scale 3
@@ -76,9 +79,9 @@ conduct run cassandra-myservice --scale 3
 
 ... which will run and cluster 3 instances of Cassandra.
 
-### Modifying configuration
+### Modifying bundle configuration
 
-The only file that you typically modify is the `cassandra-myservice/bundle.conf`. You  address each one of the properties in there so that they do not clash with other Cassandra clusters i.e.:
+To modify bundle configuration specifics change the `cassandra-myservice/bundle.conf` file. For example, if you want to run multiple Cassandra clusters in parallel you can change the cluster name and endpoints in here:
 
 ```
 name   = "cassandra-myservice" <-- Change
@@ -88,23 +91,25 @@ components.cassandra = {
     "cas_native" = {
       bind-protocol = "tcp"
       bind-port     = 0
-      services      = ["tcp://:9043/mynative"] <-- Change the port and path
+      services      = ["tcp://:9042/mynative"] <-- Change the port and path
     },
     "cas_rpc" = {
       bind-protocol = "tcp"
       bind-port     = 0
-      services      = ["tcp://:9161/myrpc"] <-- Change the port and path
+      services      = ["tcp://:9160/myrpc"] <-- Change the port and path
     },
     "cas_storage" = {
       bind-protocol = "tcp"
-      bind-port     = 7001 <-- Change the port
+      bind-port     = 7000 <-- Change the port
       services      = []
     }
   }
 }
 ```
 
-For advanced configuration, the sample `casssandra-myservice` folder provides a `cassandra-conf` folder containing all of the files that Cassandra uses for configuration. You can modify any of the files as needed, bearing in mind that the following cassandra.yaml configuration is handled by the bundle automatically:
+### Modifying Cassandra configuration
+
+The sample `casssandra-myservice` directory provides a `cassandra-conf` directory containing all of the files that Cassandra uses for configuration. You can modify any of the files as needed, bearing in mind that the following cassandra.yaml configuration is handled by the bundle automatically:
 
 Property               | Description
 -----------------------|------------
@@ -115,10 +120,12 @@ native_transport_port  | As per your bundle.conf's cas_native port setting
 rpc_port               | As per your bundle.conf's cas_rpc port setting
 storage_port           | As per your bundle.conf's cas_storage port setting
 seeds                  | The seed IPs of the cas_storage host addresses
-hints_directory        | /var/lib/cassandra/hints where "cassandra" is your bundle.conf's bundle name and bundle compatibility version
-data_file_directories  | /var/lib/cassandra/data where "cassandra" is your bundle.conf's bundle name and bundle compatibility version
-commitlog_directory    | /var/lib/cassandra/commitlog where "cassandra" is your bundle.conf's bundle name and bundle compatibility version
-saved_caches_directory | /var/lib/cassandra/saved_caches where "cassandra" is your bundle.conf's bundle name and bundle compatibility version
+
+It is also possible to provide your custom `cassandra.in.sh` script. To do that place the script into the `cassandra-myservice` directory and export the path in the `runtime-config.sh` script:
+
+```
+export CASSANDRA_INCLUDE="$BUNDLE_CONFIG_DIR/my-cassandra.in.sh"
+```
 
 ## JMX
 
@@ -128,6 +135,17 @@ By default, both local and remote JMX connections are disabled for this bundle. 
 
 The `build.sbt` declares the requisite Cassandra dependencies. Simply updating the version of the dependencies should be sufficient, at least for minor upgrades.
 
-For more major upgrades, update the `src/universal` folders. Note that the `bin/cassandra` folder remains untouched and so you can drop-in replace it with the one from Cassandra's distribution. Similarly all of the `conf` and `lib/sigar-bin` folders takes files untouched from the regular Cassandra distribution. In fact the only two files that are custom to the ConductR build are the `bin/bootstrap` and `bin/conductr-cassandra.in.sh` files. The latter is a customization of the Cassandra distribution's `bin/cassandra.in.sh`.
+For more major upgrades, update the `src/universal` folders with the files from the Cassandra distribution. Note that the following files have been customized and cannot be replaced with a Cassandra distribution file:
 
-`sbt bundle:publish` will publish the bundle to bintray.
+```
+- bin/cassandra
+- bin/conductr-cassandra.in.sh
+- conf/cassandra-env.sh
+```
+
+To publish the bundle and `cassandra-prod` bundle configuration to Bintray use:
+
+```
+sbt bundle:publish
+sbt configuration:publish
+```
