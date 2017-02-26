@@ -120,6 +120,10 @@ data_file_directories  | /var/lib/cassandra/data where "cassandra" is your bundl
 commitlog_directory    | /var/lib/cassandra/commitlog where "cassandra" is your bundle.conf's bundle name and bundle compatibility version
 saved_caches_directory | /var/lib/cassandra/saved_caches where "cassandra" is your bundle.conf's bundle name and bundle compatibility version
 
+## JMX
+
+By default, both local and remote JMX connections are disabled for this bundle. To enable JMX, provide a `cassandra-conf/cassandra-env.sh` in your custom bundle configuration and add the JMX settings into it.
+
 ## Development
 
 The `build.sbt` declares the requisite Cassandra dependencies. Simply updating the version of the dependencies should be sufficient, at least for minor upgrades.
