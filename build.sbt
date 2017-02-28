@@ -32,9 +32,12 @@ javaOptions in Bundle := Seq.empty
 
 // Bundle publishing configuration
 
-inConfig(Bundle)(Seq(
+def bintrayBundleSettings = Seq(
   bintrayVcsUrl := Some("https://github.com/typesafehub/conductr-cassandra"),
   bintrayOrganization := Some("typesafe")
-))
+)
+
+inConfig(Bundle)(bintrayBundleSettings)
+inConfig(BundleConfiguration)(bintrayBundleSettings)
 
 lazy val root = project.in(file(".")).enablePlugins(JavaServerAppPackaging)
