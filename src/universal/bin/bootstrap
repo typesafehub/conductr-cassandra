@@ -1,6 +1,6 @@
 #!/bin/bash
 CURRENT_PATH=`dirname "$0"`
-export CASSANDRA_HOME="`cd "${CURRENT_PATH}/..";pwd`"
-echo "Cassandra home: $CASSANDRA_HOME"
-export CASSANDRA_INCLUDE="$CURRENT_PATH/conductr-cassandra.in.sh"
+if [ "x$CASSANDRA_INCLUDE" = "x" ]; then
+  export CASSANDRA_INCLUDE="$CURRENT_PATH/conductr-cassandra.in.sh"
+fi
 /bin/bash $CURRENT_PATH/cassandra -f
