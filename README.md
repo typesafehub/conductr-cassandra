@@ -33,7 +33,7 @@ When running Cassandra in production we recommend to use our production configur
 conduct load cassandra cassandra-prod
 ```
 
-This will load the cassandra bundle together with a [provided bundle configuration](https://github.com/typesafehub/conductr-cassandra/tree/master/src/universal/bundle-configuration/cassandra-prod) that is suited for production purposes.
+This will load the cassandra bundle together with a [provided bundle configuration](https://github.com/typesafehub/conductr-cassandra/tree/master/src/bundle-configuration/cassandra-prod) that is suited for production purposes.
 
 This bundle configuration changes the Cassandra working base directory to `/var/lib/cassandra`.
 
