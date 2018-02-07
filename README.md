@@ -1,5 +1,7 @@
 # conductr-cassandra
 
+*Note that this project is EOL as of 2018-01-31.*
+
 ## Overview
 
 This project provides a [ConductR](http://conductr.typesafe.com) unit of deployment (bundle) for [Apache Cassandra](http://cassandra.apache.org/). By using this bundle you can deploy Cassandra over many nodes and it will scale automatically.
